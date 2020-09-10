@@ -1,11 +1,11 @@
+include(ExternalProject)
+
 macro(general_params)
 	set(CMAKE_CXX_STANDARD 20)
 	set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 	set(EXTERNAL_DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/external/ CACHE PATH "Target directory for download external libraries")
 	set(ROOT_BINARY_DIR ${CMAKE_BINARY_DIR} CACHE PATH "Binary directory of top level project")
-
-	set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/.install)
 
 	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
