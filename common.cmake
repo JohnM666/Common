@@ -65,7 +65,7 @@ function(add_external_project_cmake_download)
 	setup_external_project_variables()
 
 	ExternalProject_Add(${VAR_EXTERNAL_PROJECT}
-		URL "${URL}"
+		URL ${VAR_URL}
 		CMAKE_ARGS ${VAR_CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX=${ROOT_BINARY_DIR}
 		
 		PREFIX ${${VAR_EXTERNAL_PROJECT}_PREFIX}
