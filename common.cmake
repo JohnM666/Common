@@ -100,7 +100,7 @@ function(add_external_project_cmake)
 		INSTALL_COMMAND ${VAR_INSTALL_COMMAND})
 endfunction()
 
-function(add_external_project_custom)
+function(download_external_project)
 	set(options STANDRAD_INSTALL)
 	set(oneValueArgs EXTERNAL_PROJECT GIT_REPOSITORY GIT_TAG)
 	set(multiValueArgs INSTALL_COMMAND BUILD_COMMAND CONFIGURE_COMMAND)
@@ -124,7 +124,7 @@ function(add_external_project_custom)
 		TMP_DIR ${${VAR_EXTERNAL_PROJECT}_TMP_DIR}
 		DOWNLOAD_DIR ${${VAR_EXTERNAL_PROJECT}_DOWNLOAD_DIR}
 		
-		INSTALL_COMMAND ${VAR_INSTALL_COMMAND}
-		BUILD_COMMAND ${VAR_BUILD_COMMAND}
-		CONFIGURE_COMMAND ${VAR_CONFIGURE_COMMAND})
+		INSTALL_COMMAND ""
+		BUILD_COMMAND ""
+		CONFIGURE_COMMAND "")
 endfunction()
