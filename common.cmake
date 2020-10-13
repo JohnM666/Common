@@ -109,7 +109,7 @@ function(add_external_project_custom)
 	setup_external_project_variables()
 
 	message("Install: ${VAR_INSTALL_COMMAND}")
-	messgae("Configure: ${VAR_CONFIGURE_COMMAND}")
+	message("Configure: ${VAR_CONFIGURE_COMMAND}")
 	message("Build: ${VAR_BUILD_COMMAND}")
 
 	ExternalProject_Add(${VAR_EXTERNAL_PROJECT}
