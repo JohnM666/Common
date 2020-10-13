@@ -108,10 +108,6 @@ function(download_external_project)
 
 	setup_external_project_variables()
 
-	message("Install: ${VAR_INSTALL_COMMAND}")
-	message("Configure: ${VAR_CONFIGURE_COMMAND}")
-	message("Build: ${VAR_BUILD_COMMAND}")
-
 	ExternalProject_Add(${VAR_EXTERNAL_PROJECT}
 		GIT_REPOSITORY ${VAR_GIT_REPOSITORY}
 		GIT_TAG ${VAR_GIT_TAG}
