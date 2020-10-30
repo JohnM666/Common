@@ -124,3 +124,42 @@ function(download_external_project)
 		BUILD_COMMAND ""
 		CONFIGURE_COMMAND "")
 endfunction()
+
+function(target_reflect target apiDef)
+    set(allowed_file_extensions h|hpp)
+    set(excluded_file_patterns "pch")
+
+    get_target_property(sources ${target} SOURCES)
+    
+    foreach(src ${sources})
+        if(src MATCHES \\.\(${allowed_file_extensions}\)$ AND NOT src MATCHES ${excluded_file_patterns})
+            get_filename_component(src_name ${src} NAME_WE)
+            set(gen_h ${GENERATED_DIR}/${src_name}.g.h)
+            set(gen_cpp ${GENERATED_DIR}/${src_name}.g.cpp)
+
+            if(NOT EXISTS ${gen_h})
+                file(WRITE ${gen_h} "")
+            endif()
+
+            if(NOT EXISTS ${gen_cpp})
+                file(WRITE ${gen_cpp} "#include \"pch.h\"\n")
+            endif()
+
+            add_custom_command(
+                OUTPUT "${gen_h}"
+                DEPENDS "${src}"
+                DEPENDS ${CMAKE_SOURCE_DIR}/Intermediate/Binaries/SparkleCompiler.exe
+                COMMAND ${CMAKE_SOURCE_DIR}/Intermediate/Binaries/SparkleCompiler.exe "${CMAKE_CURRENT_SOURCE_DIR}" "${src}" "${gen_h}" "${gen_cpp}" ${apiDef}
+                COMMENT "[reflection] ${src}")
+
+            target_sources(${target} PRIVATE ${gen_h})
+            target_sources(${target} PRIVATE ${gen_cpp})
+
+            set_source_files_properties(${src} PROPERTIES GENERATED TRUE)
+            source_group("Generated" FILES ${gen_h})
+            source_group("Generated" FILES ${gen_cpp})
+        endif()
+    endforeach()
+
+    target_include_directories(${target} PRIVATE ${GENERATED_DIR})
+endfunction()
