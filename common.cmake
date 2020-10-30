@@ -148,8 +148,8 @@ function(target_reflect target apiDef)
             add_custom_command(
                 OUTPUT "${gen_h}"
                 DEPENDS "${src}"
-                DEPENDS ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/DazilCore.exe
-                COMMAND ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/DazilCore.exe "${CMAKE_CURRENT_SOURCE_DIR}" "${src}" "${gen_h}" "${gen_cpp}" ${apiDef}
+                DEPENDS ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector.exe
+                COMMAND ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector.exe "${CMAKE_CURRENT_SOURCE_DIR}" "${src}" "${gen_h}" "${gen_cpp}" ${apiDef}
                 COMMENT "[reflection] ${src}")
 
             target_sources(${target} PRIVATE ${gen_h})
