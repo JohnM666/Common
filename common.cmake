@@ -134,8 +134,8 @@ function(target_reflect target apiDef)
     foreach(src ${sources})
         if(src MATCHES \\.\(${allowed_file_extensions}\)$ AND NOT src MATCHES ${excluded_file_patterns})
             get_filename_component(src_name ${src} NAME_WE)
-            set(gen_h ${GENERATED_DIR}/${src_name}.g.h)
-            set(gen_cpp ${GENERATED_DIR}/${src_name}.g.cpp)
+            set(gen_h ${CMAKE_BINARY_DIR}/gen/${src_name}.g.h)
+            set(gen_cpp ${CMAKE_BINARY_DIR}/gen/${src_name}.g.cpp)
 
             if(NOT EXISTS ${gen_h})
                 file(WRITE ${gen_h} "")
@@ -148,8 +148,8 @@ function(target_reflect target apiDef)
             add_custom_command(
                 OUTPUT "${gen_h}"
                 DEPENDS "${src}"
-                DEPENDS ${CMAKE_SOURCE_DIR}/Intermediate/Binaries/SparkleCompiler.exe
-                COMMAND ${CMAKE_SOURCE_DIR}/Intermediate/Binaries/SparkleCompiler.exe "${CMAKE_CURRENT_SOURCE_DIR}" "${src}" "${gen_h}" "${gen_cpp}" ${apiDef}
+                DEPENDS ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/DazilCore.exe
+                COMMAND ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/DazilCore.exe "${CMAKE_CURRENT_SOURCE_DIR}" "${src}" "${gen_h}" "${gen_cpp}" ${apiDef}
                 COMMENT "[reflection] ${src}")
 
             target_sources(${target} PRIVATE ${gen_h})
