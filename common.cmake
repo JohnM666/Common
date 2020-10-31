@@ -130,6 +130,8 @@ function(target_reflect target apiDef)
     set(excluded_file_patterns "pch")
 
     get_target_property(sources ${target} SOURCES)
+
+    target_include_directories(${target} PRIVATE ${CMAKE_BINARY_DIR}/gen/${target})
     
     foreach(src ${sources})
         if(src MATCHES \\.\(${allowed_file_extensions}\)$ AND NOT src MATCHES ${excluded_file_patterns})
