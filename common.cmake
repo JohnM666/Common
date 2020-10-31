@@ -149,7 +149,7 @@ function(target_reflect target apiDef)
                 OUTPUT "${gen_h}"
                 DEPENDS "${src}"
                 DEPENDS ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector.exe
-                COMMAND ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector.exe "${CMAKE_CURRENT_SOURCE_DIR}" "${src}" "${gen_h}" "${gen_cpp}" ${apiDef}
+                COMMAND ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector.exe "${CMAKE_CURRENT_SOURCE_DIR}" "${src}" "${gen_h}" "${gen_cpp}" ${apiDef} ${target}
                 COMMENT "[reflection] ${src}")
 
             target_sources(${target} PRIVATE ${gen_h})
