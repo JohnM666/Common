@@ -128,16 +128,18 @@ endfunction()
 function(target_reflect target apiDef)
     set(allowed_file_extensions h|hpp)
     set(excluded_file_patterns "pch")
+    set(gen_dir_h "${CMAKE_BINARY_DIR}/gen/${target}/include")
+    set(gen_dir_cpp "${CMAKE_BINARY_DIR}/gen/${target}/src")
 
     get_target_property(sources ${target} SOURCES)
 
     target_include_directories(${target} PRIVATE ${CMAKE_BINARY_DIR}/gen/${target})
-    
+
     foreach(src ${sources})
         if(src MATCHES \\.\(${allowed_file_extensions}\)$ AND NOT src MATCHES ${excluded_file_patterns})
             get_filename_component(src_name ${src} NAME_WE)
-            set(gen_h ${CMAKE_BINARY_DIR}/gen/${target}/${src_name}.g.h)
-            set(gen_cpp ${CMAKE_BINARY_DIR}/gen/${target}/${src_name}.g.cpp)
+            set(gen_h ${gen_dir_h}/${src_name}.g.h)
+            set(gen_cpp ${gen_dir_cpp}/${src_name}.g.cpp)
 
             if(NOT EXISTS ${gen_h})
                 file(WRITE ${gen_h} "")
@@ -148,8 +150,6 @@ function(target_reflect target apiDef)
             endif()
 
             add_custom_command(
-                OUTPUT "${gen_h}"
-                DEPENDS "${src}"
                 DEPENDS ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector.exe
                 COMMAND ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector.exe "${CMAKE_CURRENT_SOURCE_DIR}" "${src}" "${gen_h}" "${gen_cpp}" ${apiDef} ${target}
                 COMMENT "[reflection] ${src}")
@@ -163,5 +163,9 @@ function(target_reflect target apiDef)
         endif()
     endforeach()
 
-    target_include_directories(${target} PRIVATE ${GENERATED_DIR})
+    add_custom_command(
+	COMMAND ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector.exe "${CMAKE_CURRENT_SOURCE_DIR}" "__global__" "${gen_dir_cpp}/__global__.h" "${gen_dir_cpp}/__global__.cpp" ${apiDef} ${target}
+	COMMENT "[reflection] __global__")
+
+    target_include_directories(${target} PRIVATE ${gen_dir_h})
 endfunction()
