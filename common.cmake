@@ -133,7 +133,9 @@ function(target_reflect target apiDef)
 
     get_target_property(sources ${target} SOURCES)
 
-    target_include_directories(${target} PRIVATE ${CMAKE_BINARY_DIR}/gen/${target})
+    if(NOT EXISTS "${gen_dir_cpp}/__global__.cpp")
+        file(WRITE "${gen_dir_cpp}/__global__.cpp" "#include \"pch.h\"\n")
+    endif()
 
     foreach(src ${sources})
         if(src MATCHES \\.\(${allowed_file_extensions}\)$ AND NOT src MATCHES ${excluded_file_patterns})
