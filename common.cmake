@@ -150,7 +150,7 @@ function(target_reflect target apiDef)
             endif()
 
             add_custom_command(
-                OUTPUT CONCAT(reflection_ ${src})
+                OUTPUT "reflection_${src}"
                 COMMAND ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector.exe "${CMAKE_CURRENT_SOURCE_DIR}" "${src}" "${gen_h}" "${gen_cpp}" ${apiDef} ${target}
                 COMMENT "[reflection] ${src}")
 
