@@ -136,6 +136,7 @@ function(target_reflect target apiDef)
     if(NOT EXISTS "${gen_dir_cpp}/__global__.cpp")
         file(WRITE "${gen_dir_cpp}/__global__.cpp" "#include \"pch.h\"\n")
     endif()
+    source_group("Generated" FILES "${gen_dir_cpp}/__global__.cpp")
 
     foreach(src ${sources})
         if(src MATCHES \\.\(${allowed_file_extensions}\)$ AND NOT src MATCHES ${excluded_file_patterns})
