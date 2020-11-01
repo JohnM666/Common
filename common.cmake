@@ -141,14 +141,6 @@ function(target_reflect target apiDef)
             set(gen_h ${gen_dir_h}/${src_name}.g.h)
             set(gen_cpp ${gen_dir_cpp}/${src_name}.g.cpp)
 
-            if(NOT EXISTS ${gen_h})
-                file(WRITE ${gen_h} "")
-            endif()
-
-            if(NOT EXISTS ${gen_cpp})
-                file(WRITE ${gen_cpp} "#include \"pch.h\"\n")
-            endif()
-
             add_custom_command(
                 TARGET ${target} PRE_BUILD
                 COMMAND ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector.exe "${CMAKE_CURRENT_SOURCE_DIR}" "${src}" "${gen_h}" "${gen_cpp}" ${apiDef} ${target})
