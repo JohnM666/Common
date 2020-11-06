@@ -153,9 +153,10 @@ function(target_reflect target apiDef)
             endif()
 
             add_custom_command(
-                TARGET ${target} PRE_BUILD
+                OUTPUT "${gen_cpp}"
+                DEPENDS "${src}"
                 COMMAND ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector "${CMAKE_CURRENT_SOURCE_DIR}" "${src}" "${gen_h}" "${gen_cpp}" ${apiDef} ${target}
-		COMMENT "")
+		COMMENT "[reflection] ${src}")
 
             target_sources(${target} PRIVATE ${gen_h})
             target_sources(${target} PRIVATE ${gen_cpp})
@@ -169,9 +170,10 @@ function(target_reflect target apiDef)
     target_sources(${target} PRIVATE "${gen_dir_cpp}/__global__.cpp")
 
     add_custom_command(
-	TARGET ${target} PRE_BUILD
+	OUTPUT "${gen_cpp}"
+	DEPENDS ${sources}
 	COMMAND ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector "${CMAKE_CURRENT_SOURCE_DIR}" "__global__" "${gen_dir_cpp}/__global__.h" "${gen_dir_cpp}/__global__.cpp" ${apiDef} ${target}
-	COMMENT "")
+	COMMENT "[reflection] __global__")
 
     target_include_directories(${target} PRIVATE ${gen_dir_h})
 endfunction()
