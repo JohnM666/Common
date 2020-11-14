@@ -170,7 +170,7 @@ function(target_reflect target apiDef)
     add_custom_command(
 	OUTPUT "${gen_dir_cpp}/__global__.cpp"
 	DEPENDS ${generated_files} "${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector${CMAKE_EXECUTABLE_SUFFIX}"
-	COMMAND ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector "${CMAKE_CURRENT_SOURCE_DIR}" "__global__" "${gen_dir_cpp}/__global__.h" "${gen_dir_cpp}/__global__.cpp" ${apiDef} ${target}
+	COMMAND ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector "${CMAKE_CURRENT_SOURCE_DIR}" "__global__" "${gen_dir_cpp}/__global__.cpp" ${apiDef} ${target}
 	COMMENT "[reflection] __global__")
 
     target_include_directories(${target} PRIVATE ${gen_dir_h})
