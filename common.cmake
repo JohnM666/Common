@@ -132,8 +132,7 @@ endfunction()
 function(target_reflect target apiDef)
     set(allowed_file_extensions h|hpp)
     set(excluded_file_patterns "pch")
-    set(gen_dir_h "${CMAKE_BINARY_DIR}/gen/${target}/include")
-    set(gen_dir_cpp "${CMAKE_BINARY_DIR}/gen/${target}/src")
+    set(gen_dir_cpp "${CMAKE_BINARY_DIR}/gen/${target}/")
 
     get_target_property(sources ${target} SOURCES)
 
@@ -145,14 +144,9 @@ function(target_reflect target apiDef)
     foreach(src ${sources})
         if(src MATCHES \\.\(${allowed_file_extensions}\)$ AND NOT src MATCHES ${excluded_file_patterns})
             get_filename_component(src_name ${src} NAME_WE)
-            set(gen_h ${gen_dir_h}/${src_name}.g.h)
             set(gen_cpp ${gen_dir_cpp}/${src_name}.g.cpp)
             
-            list(APPEND generates_files ${gen_h} ${gen_cpp})
-
-	    if(NOT EXISTS ${gen_h})
-                file(WRITE ${gen_h} "")
-            endif()
+            list(APPEND generates_files ${gen_cpp})
 
             if(NOT EXISTS ${gen_cpp})
                 file(WRITE ${gen_cpp} "#include \"pch.h\"\n")
@@ -161,14 +155,12 @@ function(target_reflect target apiDef)
             add_custom_command(
                 OUTPUT "${gen_cpp}"
                 DEPENDS "${src}" "${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector${CMAKE_EXECUTABLE_SUFFIX}"
-                COMMAND ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector "${CMAKE_CURRENT_SOURCE_DIR}" "${src}" "${gen_h}" "${gen_cpp}" ${apiDef} ${target}
+                COMMAND ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector "${CMAKE_CURRENT_SOURCE_DIR}" "${src}" "${gen_cpp}" ${apiDef} ${target}
 		COMMENT "[reflection] ${src}")
 
-            target_sources(${target} PRIVATE ${gen_h})
             target_sources(${target} PRIVATE ${gen_cpp})
 
             set_source_files_properties(${src} PROPERTIES GENERATED TRUE)
-            source_group("Generated" FILES ${gen_h})
             source_group("Generated" FILES ${gen_cpp})
         endif()
     endforeach()
