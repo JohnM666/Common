@@ -11,7 +11,7 @@ macro(general_params)
 	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/$<CONFIG>)
 
 	if(MSVC)
-		add_compile_options("/Zc:preprocessor")
+		add_compile_options("/Zc:preprocessor" /wd"5105")
 	endif()
 endmacro()
 
