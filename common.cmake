@@ -4,8 +4,6 @@ macro(general_params)
 	set(CMAKE_CXX_STANDARD 20)
 	set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-	set(ROOT_BINARY_DIR ${CMAKE_BINARY_DIR} CACHE PATH "Binary directory of top level project")
-
 	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/$<CONFIG>)
 	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/$<CONFIG>)
 	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/$<CONFIG>)
@@ -45,7 +43,7 @@ macro(default_filter)
 endmacro()
 
 macro(setup_external_project_variables)
-	set(${VAR_EXTERNAL_PROJECT}_PREFIX "${ROOT_BINARY_DIR}/external/${VAR_EXTERNAL_PROJECT}")
+	set(${VAR_EXTERNAL_PROJECT}_PREFIX "${CMAKE_BINARY_DIR}/external/${VAR_EXTERNAL_PROJECT}")
 	set(${VAR_EXTERNAL_PROJECT}_SOURCE_DIR "${${VAR_EXTERNAL_PROJECT}_PREFIX}/${VAR_EXTERNAL_PROJECT}")
 	set(${VAR_EXTERNAL_PROJECT}_BINARY_DIR "${${VAR_EXTERNAL_PROJECT}_PREFIX}/${VAR_EXTERNAL_PROJECT}-build")
 	set(${VAR_EXTERNAL_PROJECT}_DOWNLOAD_DIR "${${VAR_EXTERNAL_PROJECT}_SOURCE_DIR}" PARENT_SCOPE)
@@ -70,7 +68,7 @@ function(add_external_project_cmake_download)
 
 	ExternalProject_Add(${VAR_EXTERNAL_PROJECT}
 		URL ${VAR_URL}
-		CMAKE_ARGS ${VAR_CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX=${ROOT_BINARY_DIR}
+		CMAKE_ARGS ${VAR_CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}
 		
 		PREFIX ${${VAR_EXTERNAL_PROJECT}_PREFIX}
 		BINARY_DIR ${${VAR_EXTERNAL_PROJECT}_BINARY_DIR}
@@ -93,7 +91,7 @@ function(add_external_project_cmake)
 		GIT_REPOSITORY ${VAR_GIT_REPOSITORY}
 		GIT_TAG ${VAR_GIT_TAG}
 		GIT_REMOTE_NAME origin
-		CMAKE_ARGS ${VAR_CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX=${ROOT_BINARY_DIR}
+		CMAKE_ARGS ${VAR_CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}
 
 		PREFIX ${${VAR_EXTERNAL_PROJECT}_PREFIX}
 		BINARY_DIR ${${VAR_EXTERNAL_PROJECT}_BINARY_DIR}
@@ -156,7 +154,7 @@ function(target_reflect target apiDef)
             add_custom_command(
                 OUTPUT "${gen_cpp}"
                 DEPENDS "${src}" "${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector${CMAKE_EXECUTABLE_SUFFIX}"
-                COMMAND ${ROOT_BINARY_DIR}/bin/$<CONFIG>/Reflector "${PROJECT_SOURCE_DIR}" "${src}" "${gen_cpp}" ${apiDef} ${target}
+                COMMAND ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector "${PROJECT_SOURCE_DIR}" "${src}" "${gen_cpp}" ${apiDef} ${target}
 		COMMENT "[reflection] ${src}")
 
             target_sources(${target} PRIVATE ${gen_cpp})
@@ -171,7 +169,7 @@ function(target_reflect target apiDef)
     add_custom_command(
 	OUTPUT "${gen_dir_cpp}/__global__.cpp"
 	DEPENDS ${generated_files} "${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector${CMAKE_EXECUTABLE_SUFFIX}"
-	COMMAND ${ROOT_BINARY_DIR}/bin/$<CONFIG>/Reflector "${PROJECT_SOURCE_DIR}" "__global__" "${gen_dir_cpp}/__global__.cpp" ${apiDef} ${target}
+	COMMAND ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector "${PROJECT_SOURCE_DIR}" "__global__" "${gen_dir_cpp}/__global__.cpp" ${apiDef} ${target}
 	COMMENT "[reflection] __global__")
 
     target_include_directories(${target} PRIVATE ${gen_dir_h})
