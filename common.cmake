@@ -175,3 +175,15 @@ function(target_reflect target apiDef)
 
     target_include_directories(${target} PRIVATE ${gen_dir_h})
 endfunction()
+
+function(add_external_project_googletest)
+	add_external_project_cmake(
+		EXTERNAL_PROJECT googletest
+		GIT_REPOSITORY https://github.com/google/googletest.git
+		GIT_TAG origin/v1.10.x
+		CMAKE_ARGS -DBUILD_SHARED_LIBS=ON -Dgtest_force_shared_crt=ON -DCMAKE_BUILD_TYPE=$<CONFIG>
+		INSTALL_COMMAND "${CMAKE_COMMAND}" -E copy_directory "${EXTERNAL_DOWNLOAD_DIR}/googletest/googletest-build/bin" "${ROOT_BINARY_DIR}/bin"
+			COMMAND "${CMAKE_COMMAND}" -E copy_directory "${EXTERNAL_DOWNLOAD_DIR}/googletest/googletest-build/lib" "${ROOT_BINARY_DIR}/lib")
+	set(GOOGLETEST_INCLUDE_DIRS ${EXTERNAL_DOWNLOAD_DIR}/googletest/googletest/googletest/include PARENT_SCOPE)
+	set(GOOGLETEST_LIBS gtest$<$<CONFIG:Debug>:d> gtest_main$<$<CONFIG:Debug>:d> PARENT_SCOPE)
+endfunction()
