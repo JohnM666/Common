@@ -4,7 +4,6 @@ macro(general_params)
 	set(CMAKE_CXX_STANDARD 20)
 	set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-	set(EXTERNAL_DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/external/ CACHE PATH "Target directory for download external libraries")
 	set(ROOT_BINARY_DIR ${CMAKE_BINARY_DIR} CACHE PATH "Binary directory of top level project")
 
 	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/$<CONFIG>)
@@ -45,7 +44,7 @@ macro(default_filter)
 endmacro()
 
 macro(setup_external_project_variables)
-	set(${VAR_EXTERNAL_PROJECT}_PREFIX "${EXTERNAL_DOWNLOAD_DIR}/${VAR_EXTERNAL_PROJECT}")
+	set(${VAR_EXTERNAL_PROJECT}_PREFIX "${ROOT_BINARY_DIR}/external/${VAR_EXTERNAL_PROJECT}")
 	set(${VAR_EXTERNAL_PROJECT}_SOURCE_DIR "${${VAR_EXTERNAL_PROJECT}_PREFIX}/${VAR_EXTERNAL_PROJECT}")
 	set(${VAR_EXTERNAL_PROJECT}_BINARY_DIR "${${VAR_EXTERNAL_PROJECT}_PREFIX}/${VAR_EXTERNAL_PROJECT}-build")
 	set(${VAR_EXTERNAL_PROJECT}_DOWNLOAD_DIR "${${VAR_EXTERNAL_PROJECT}_SOURCE_DIR}" PARENT_SCOPE)
@@ -175,17 +174,5 @@ function(target_reflect target apiDef)
 	COMMENT "[reflection] __global__")
 
     target_include_directories(${target} PRIVATE ${gen_dir_h})
-endfunction()
-
-function(add_external_project_googletest)
-	add_external_project_cmake(
-		EXTERNAL_PROJECT googletest
-		GIT_REPOSITORY https://github.com/google/googletest.git
-		GIT_TAG origin/v1.10.x
-		CMAKE_ARGS -DBUILD_SHARED_LIBS=ON -Dgtest_force_shared_crt=ON -DCMAKE_BUILD_TYPE=$<CONFIG>
-		INSTALL_COMMAND "${CMAKE_COMMAND}" -E copy_directory "${EXTERNAL_DOWNLOAD_DIR}/googletest/googletest-build/bin" "${ROOT_BINARY_DIR}/bin"
-			COMMAND "${CMAKE_COMMAND}" -E copy_directory "${EXTERNAL_DOWNLOAD_DIR}/googletest/googletest-build/lib" "${ROOT_BINARY_DIR}/lib")
-	set(GOOGLETEST_INCLUDE_DIRS ${EXTERNAL_DOWNLOAD_DIR}/googletest/googletest/googletest/include PARENT_SCOPE)
-	set(GOOGLETEST_LIBS gtest$<$<CONFIG:Debug>:d> gtest_main$<$<CONFIG:Debug>:d> PARENT_SCOPE)
 endfunction()
 
