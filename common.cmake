@@ -34,13 +34,14 @@ macro(target_install)
 endmacro()
 
 macro(default_filter)
-	set(oneValueArgs HEADERS_ROOT SOURCES_ROOT CONTENT_ROOT)
-	set(multiValueArgs HEADERS SOURCES CONTENT)
+	set(oneValueArgs HEADERS_ROOT SOURCES_ROOT CONTENT_ROOT INTERNAL_ROOT)
+	set(multiValueArgs HEADERS SOURCES CONTENT INTERNAL)
 	cmake_parse_arguments(VAR "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
 	source_group(TREE "${VAR_HEADERS_ROOT}" PREFIX "Headers" FILES ${VAR_HEADERS})
 	source_group(TREE "${VAR_SOURCES_ROOT}" PREFIX "Sources" FILES ${VAR_SOURCES})
 	source_group(TREE "${VAR_CONTENT_ROOT}" PREFIX "Content" FILES ${VAR_CONTENT})
+	source_group(TREE "${VAR_INTERNAL_ROOT}" PREFIX "Internal" FILES ${VAR_INTERNAL})
 endmacro()
 
 macro(setup_external_project_variables)
