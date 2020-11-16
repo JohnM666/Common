@@ -176,3 +176,19 @@ function(target_reflect target apiDef)
     target_include_directories(${target} PRIVATE ${gen_dir_h})
 endfunction()
 
+function(build_externals)
+	configure_file(external/CMakeLists.txt external/CMakeLists.txt)
+	execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+  		RESULT_VARIABLE result
+  		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/external/)
+	if(result)
+  		message(FATAL_ERROR "CMake step for externals failed: ${result}")
+	endif()
+	execute_process(COMMAND ${CMAKE_COMMAND} --build .
+  		RESULT_VARIABLE result
+  		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/external/)
+	if(result)
+  		message(FATAL_ERROR "Build step for externals failed: ${result}")
+	endif()
+endfunction()
+
