@@ -126,7 +126,8 @@ function(download_external_project)
 		
 		INSTALL_COMMAND ""
 		BUILD_COMMAND ""
-		CONFIGURE_COMMAND "")
+		CONFIGURE_COMMAND ""
+		TEST_COMMAND "")
 endfunction()
 
 function(target_reflect target apiDef)
@@ -187,3 +188,4 @@ function(add_external_project_googletest)
 	set(GOOGLETEST_INCLUDE_DIRS ${EXTERNAL_DOWNLOAD_DIR}/googletest/googletest/googletest/include PARENT_SCOPE)
 	set(GOOGLETEST_LIBS gtest$<$<CONFIG:Debug>:d> gtest_main$<$<CONFIG:Debug>:d> PARENT_SCOPE)
 endfunction()
+
