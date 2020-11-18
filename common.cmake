@@ -43,7 +43,7 @@ macro(default_filter)
 endmacro()
 
 macro(setup_external_project_variables)
-	set(${VAR_EXTERNAL_PROJECT}_PREFIX "${CMAKE_BINARY_DIR}/${VAR_EXTERNAL_PROJECT}")
+	set(${VAR_EXTERNAL_PROJECT}_PREFIX "${VAR_DIRECTORY}/${VAR_EXTERNAL_PROJECT}")
 	set(${VAR_EXTERNAL_PROJECT}_SOURCE_DIR "${${VAR_EXTERNAL_PROJECT}_PREFIX}/${VAR_EXTERNAL_PROJECT}")
 	set(${VAR_EXTERNAL_PROJECT}_BINARY_DIR "${${VAR_EXTERNAL_PROJECT}_PREFIX}/${VAR_EXTERNAL_PROJECT}-build")
 	set(${VAR_EXTERNAL_PROJECT}_DOWNLOAD_DIR "${${VAR_EXTERNAL_PROJECT}_SOURCE_DIR}" PARENT_SCOPE)
@@ -58,53 +58,8 @@ macro(setup_external_project_variables)
 	set(${VAR_EXTERNAL_PROJECT}_TMP_DIR ${${VAR_EXTERNAL_PROJECT}_TMP_DIR} PARENT_SCOPE)
 endmacro()
 
-function(add_external_project_cmake_download)
-	set(options STANDARD_INSTALL)
-	set(oneValueArgs EXTERNAL_PROJECT URL)
-	set(multiValueArgs CMAKE_ARGS INSTALL_COMMAND)
-	cmake_parse_arguments(VAR "${options}" "${oneValueArgs}" "${multiValueArgs}" "${ARGN}")
-
-	setup_external_project_variables()
-
-	ExternalProject_Add(${VAR_EXTERNAL_PROJECT}
-		URL ${VAR_URL}
-		CMAKE_ARGS ${VAR_CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}
-		
-		PREFIX ${${VAR_EXTERNAL_PROJECT}_PREFIX}
-		BINARY_DIR ${${VAR_EXTERNAL_PROJECT}_BINARY_DIR}
-		SOURCE_DIR ${${VAR_EXTERNAL_PROJECT}_SOURCE_DIR}
-		STAMP_DIR ${${VAR_EXTERNAL_PROJECT}_STAMP_DIR}
-		TMP_DIR ${${VAR_EXTERNAL_PROJECT}_TMP_DIR}
-		DOWNLOAD_DIR ${${VAR_EXTERNAL_PROJECT}_DOWNLOAD_DIR}
-		INSTALL_COMMAND ${VAR_INSTALL_COMMAND})
-endfunction()
-
-function(add_external_project_cmake)
-	set(options STANDARD_INSTALL)
-	set(oneValueArgs EXTERNAL_PROJECT GIT_REPOSITORY GIT_TAG)
-	set(multiValueArgs CMAKE_ARGS INSTALL_COMMAND)
-	cmake_parse_arguments(VAR "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-
-	setup_external_project_variables()
-
-	ExternalProject_Add(${VAR_EXTERNAL_PROJECT}
-		GIT_REPOSITORY ${VAR_GIT_REPOSITORY}
-		GIT_TAG ${VAR_GIT_TAG}
-		GIT_REMOTE_NAME origin
-		CMAKE_ARGS ${VAR_CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}
-
-		PREFIX ${${VAR_EXTERNAL_PROJECT}_PREFIX}
-		BINARY_DIR ${${VAR_EXTERNAL_PROJECT}_BINARY_DIR}
-		SOURCE_DIR ${${VAR_EXTERNAL_PROJECT}_SOURCE_DIR}
-		STAMP_DIR ${${VAR_EXTERNAL_PROJECT}_STAMP_DIR}
-		TMP_DIR ${${VAR_EXTERNAL_PROJECT}_TMP_DIR}
-		DOWNLOAD_DIR ${${VAR_EXTERNAL_PROJECT}_DOWNLOAD_DIR}
-		INSTALL_COMMAND ${VAR_INSTALL_COMMAND})
-endfunction()
-
 function(download_external_project)
-	set(options STANDRAD_INSTALL)
-	set(oneValueArgs EXTERNAL_PROJECT GIT_REPOSITORY GIT_TAG)
+	set(oneValueArgs EXTERNAL_PROJECT GIT_REPOSITORY GIT_TAG DIRECTORY)
 	set(multiValueArgs INSTALL_COMMAND BUILD_COMMAND CONFIGURE_COMMAND)
 	cmake_parse_arguments(VAR "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
