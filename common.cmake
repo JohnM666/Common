@@ -132,15 +132,15 @@ endfunction()
 
 function(build_externals)
 	configure_file(external/CMakeLists.txt external/CMakeLists.txt)
-	execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" "${CMAKE_CURRENT_BINARY_DIR}/external"
+	execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
   		RESULT_VARIABLE result
-  		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/external/)
+  		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/external/)
 	if(result)
   		message(FATAL_ERROR "CMake step for externals failed: ${result}")
 	endif()
-	execute_process(COMMAND ${CMAKE_COMMAND} --build "${CMAKE_CURRENT_BINARY_DIR}/external"
+	execute_process(COMMAND ${CMAKE_COMMAND} --build .
   		RESULT_VARIABLE result
-  		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/external/)
+  		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/external/)
 	if(result)
   		message(FATAL_ERROR "Build step for externals failed: ${result}")
 	endif()
