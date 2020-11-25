@@ -84,6 +84,30 @@ function(download_external_project)
 		TEST_COMMAND "")
 endfunction()
 
+function(download_fucking_project)
+	set(oneValueArgs EXTERNAL_PROJECT GIT_REPOSITORY GIT_TAG DIRECTORY URL INSTALL_DESTINATION)
+	set(multiValueArgs INSTALL_COMMAND BUILD_COMMAND CONFIGURE_COMMAND)
+	cmake_parse_arguments(VAR "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+	setup_external_project_variables()
+
+	ExternalProject_Add(${VAR_EXTERNAL_PROJECT}
+		GIT_REPOSITORY ${VAR_GIT_REPOSITORY}
+		GIT_TAG ${VAR_GIT_TAG}
+		GIT_REMOTE_NAME origin
+		URL ${VAR_URL}
+		
+		PREFIX ${${VAR_EXTERNAL_PROJECT}_PREFIX}
+		BINARY_DIR ${${VAR_EXTERNAL_PROJECT}_BINARY_DIR}
+		SOURCE_DIR ${${VAR_EXTERNAL_PROJECT}_SOURCE_DIR}
+		STAMP_DIR ${${VAR_EXTERNAL_PROJECT}_STAMP_DIR}
+		TMP_DIR ${${VAR_EXTERNAL_PROJECT}_TMP_DIR}
+		DOWNLOAD_DIR ${${VAR_EXTERNAL_PROJECT}_DOWNLOAD_DIR}
+		
+		CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${VAR_INSTALL_DESTINATION}
+		TEST_COMMAND "")
+endfunction()
+
 function(target_reflect target apiDef)
     set(allowed_file_extensions h|hpp)
     set(excluded_file_patterns "pch")
