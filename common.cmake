@@ -59,7 +59,7 @@ macro(setup_external_project_variables)
 endmacro()
 
 function(download_external_project)
-	set(oneValueArgs EXTERNAL_PROJECT GIT_REPOSITORY GIT_TAG DIRECTORY)
+	set(oneValueArgs EXTERNAL_PROJECT GIT_REPOSITORY GIT_TAG DIRECTORY URL)
 	set(multiValueArgs INSTALL_COMMAND BUILD_COMMAND CONFIGURE_COMMAND)
 	cmake_parse_arguments(VAR "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -69,6 +69,7 @@ function(download_external_project)
 		GIT_REPOSITORY ${VAR_GIT_REPOSITORY}
 		GIT_TAG ${VAR_GIT_TAG}
 		GIT_REMOTE_NAME origin
+		URL ${VAR_URL}
 		
 		PREFIX ${${VAR_EXTERNAL_PROJECT}_PREFIX}
 		BINARY_DIR ${${VAR_EXTERNAL_PROJECT}_BINARY_DIR}
