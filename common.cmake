@@ -158,6 +158,7 @@ function(target_reflect target apiDef pythonBindingDirectory)
 	get_target_property(target_type ${PROJECT_NAME} TYPE)
 
 	if(NOT target_type STREQUAL "EXECUTABLE")
+		file(WRITE "${pythonBindingDirectory}/__dummy__.cpp" "")
         	file(GLOB PYTHON_SOURCES "{pythonBindingDirectory}/*.cpp")
         	pybind11_add_module(${PROJECT_NAME}Py ${PYTHON_SOURCES})
         	target_link_libraries(${PROJECT_NAME}Py PRIVATE ${PROJECT_NAME})
