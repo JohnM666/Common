@@ -108,7 +108,7 @@ function(download_fucking_project)
 		TEST_COMMAND "")
 endfunction()
 
-function(target_reflect target apiDef)
+function(target_reflect target apiDef pythonBindingDirectory)
     set(allowed_file_extensions h|hpp)
     set(excluded_file_patterns "pch")
     set(gen_dir_cpp "${CMAKE_BINARY_DIR}/gen/${target}/")
@@ -134,7 +134,7 @@ function(target_reflect target apiDef)
             add_custom_command(
                 OUTPUT "${gen_cpp}"
                 DEPENDS "${src}" "${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector${CMAKE_EXECUTABLE_SUFFIX}"
-                COMMAND ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector "${PROJECT_SOURCE_DIR}" "${src}" "${gen_cpp}" ${apiDef} ${target}
+                COMMAND ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector "${PROJECT_SOURCE_DIR}" "${src}" "${gen_cpp}" ${apiDef} ${target} ${pythonBindingDirectory}
 		COMMENT "[reflection] ${src}")
 
             target_sources(${target} PRIVATE ${gen_cpp})
@@ -149,7 +149,7 @@ function(target_reflect target apiDef)
     add_custom_command(
 	OUTPUT "${gen_dir_cpp}/__global__.cpp"
 	DEPENDS ${generated_files} "${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector${CMAKE_EXECUTABLE_SUFFIX}"
-	COMMAND ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector "${PROJECT_SOURCE_DIR}" "__global__" "${gen_dir_cpp}/__global__.cpp" ${apiDef} ${target}
+	COMMAND ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector "${PROJECT_SOURCE_DIR}" "__global__" "${gen_dir_cpp}/__global__.cpp" ${apiDef} ${target} ${pythonBindingDirectory}
 	COMMENT "[reflection] __global__")
 
     target_include_directories(${target} PRIVATE ${gen_dir_h})
