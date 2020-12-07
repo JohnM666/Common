@@ -8,8 +8,12 @@ macro(general_params)
 	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/$<CONFIG>)
 	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/$<CONFIG>)
 
+	message("${CMAKE_CXX_COMPILER_ID}")
 	if(MSVC)
 		add_compile_options("/Zc:preprocessor" /wd"5105")
+	endif()
+	if (CMAKE_CXX_COMPILER_ID STREQUAL "GCC")
+		add_compile_options("-fconcepts")
 	endif()
 endmacro()
 
@@ -108,15 +112,19 @@ function(download_fucking_project)
 		TEST_COMMAND "")
 endfunction()
 
-function(target_reflect target apiDef pythonBindingDirectory)
+function(dazil_reflect target apiDef pythonBindingDirectory)
     set(allowed_file_extensions h|hpp)
     set(excluded_file_patterns "pch")
     set(gen_dir_cpp "${CMAKE_BINARY_DIR}/gen/${target}/")
+    set(gen_dir_py "${CMAKE_BINARY_DIR}/gen/${target}Py/")
 
     get_target_property(sources ${target} SOURCES)
 
     if(NOT EXISTS "${gen_dir_cpp}/__global__.cpp")
-        file(WRITE "${gen_dir_cpp}/__global__.cpp" "#include \"pch.h\"\n")
+        file(WRITE "${gen_dir_cpp}/__global__.cpp" "")
+    endif()
+    if(NOT EXISTS "${gen_dir_py}/__main__.py.cpp")
+	file(WRITE "${gen_dir_py}/__main__.py.cpp" "")
     endif()
     source_group("Generated" FILES "${gen_dir_cpp}/__global__.cpp")
 
@@ -124,21 +132,25 @@ function(target_reflect target apiDef pythonBindingDirectory)
         if(src MATCHES \\.\(${allowed_file_extensions}\)$ AND NOT src MATCHES ${excluded_file_patterns})
             get_filename_component(src_name ${src} NAME_WE)
             set(gen_cpp ${gen_dir_cpp}/${src_name}.g.cpp)
+	    set(gen_py ${gen_dir_py}/${src_name}.py.cpp)
             
-            list(APPEND generates_files ${gen_cpp})
-
             if(NOT EXISTS ${gen_cpp})
-                file(WRITE ${gen_cpp} "#include \"pch.h\"\n")
+                file(WRITE ${gen_cpp} "")
             endif()
+
+	    if(${DAZIL_SCRIPT_PY})
+	        if(NOT EXISTS ${gen_py})
+		    file(WRITE ${gen_py} "")
+		endif()
+	    endif()
 
             add_custom_command(
                 OUTPUT "${gen_cpp}"
                 DEPENDS "${src}" "${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector${CMAKE_EXECUTABLE_SUFFIX}"
-                COMMAND ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector "${PROJECT_SOURCE_DIR}" "${src}" "${gen_cpp}" ${apiDef} ${target} ${pythonBindingDirectory}
+                COMMAND ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector "${PROJECT_SOURCE_DIR}" "${src}" "${gen_cpp}" ${apiDef} ${target} ${gen_py}
 		COMMENT "[reflection] ${src}")
 
             target_sources(${target} PRIVATE ${gen_cpp})
-
             set_source_files_properties(${src} PROPERTIES GENERATED TRUE)
             source_group("Generated" FILES ${gen_cpp})
         endif()
@@ -149,19 +161,21 @@ function(target_reflect target apiDef pythonBindingDirectory)
     add_custom_command(
 	OUTPUT "${gen_dir_cpp}/__global__.cpp"
 	DEPENDS ${generated_files} "${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector${CMAKE_EXECUTABLE_SUFFIX}"
-	COMMAND ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector "${PROJECT_SOURCE_DIR}" "__global__" "${gen_dir_cpp}/__global__.cpp" ${apiDef} ${target} ${pythonBindingDirectory}
+	COMMAND ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/Reflector "${PROJECT_SOURCE_DIR}" "__global__" "${gen_dir_cpp}/__global__.cpp" ${apiDef} ${target} "${gen_dir_py}/__main__.py.cpp"
 	COMMENT "[reflection] __global__")
 
     target_include_directories(${target} PRIVATE ${gen_dir_h})
 
     if(${DAZIL_SCRIPT_PY})
+	file(GLOB PYTHON_SOURCES "${pythonBindingDirectory}/*.cpp")
 	get_target_property(target_type ${PROJECT_NAME} TYPE)
-
+	
 	if(NOT target_type STREQUAL "EXECUTABLE")
 		file(WRITE "${pythonBindingDirectory}/__dummy__.cpp" "")
-        	file(GLOB PYTHON_SOURCES "${pythonBindingDirectory}/*.cpp")
         	pybind11_add_module(${PROJECT_NAME}Py ${PYTHON_SOURCES})
         	target_link_libraries(${PROJECT_NAME}Py PRIVATE ${PROJECT_NAME})
+	else()
+		target_sources(${target} PRIVATE ${PYTHON_SOURCES})
 	endif()
     endif()
 
@@ -183,3 +197,28 @@ function(build_externals)
 	endif()
 endfunction()
 
+function(dazil_add_shared_library target_name api_define)
+	if(${ARGC} LESS 3)
+		message("Error in dazil_add_shared_library: at least 2 arguments are required")
+		return()
+	endif()
+	add_library(${target_name} SHARED ${ARGN})
+	target_compile_definitions(${target_name} PRIVATE -DDAZIL_BUILD_TYPE_DYNAMIC_LIB)
+
+	if(${DAZIL_REFLECTION} OR ${DAZIL_SCRIPT_PY})
+		dazil_reflect(${target_name} ${api_define} "${CMAKE_BINARY_DIR}/gen/${target_name}Py/")
+	endif()
+endfunction()
+
+function(dazil_add_executable target_name api_define)
+	if(${ARGC} LESS 3)
+		message("Error in dazil_add_executable: at least 2 arguments are required")
+		return()
+	endif()
+	add_executable(${target_name} ${ARGN})
+	target_compile_definitions(${target_name} PRIVATE -DDAZIL_BUILD_TYPE_EXECUTABLE)
+
+	if(${DAZIL_REFLECTION} OR ${DAZIL_SCRIPT_PY})
+		dazil_reflect(${target_name} ${api_define} "${CMAKE_BINARY_DIR}/gen/${target_name}Py")
+	endif()
+endfunction()
