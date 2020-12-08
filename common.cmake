@@ -144,7 +144,7 @@ function(dazil_reflect target apiDef pythonBindingDirectory)
 		endif()
 	    endif()
 	    
-	    list(generated_files APPEND ${gen_cpp} ${gen_py})
+	    list(APPEND generated_files ${gen_cpp} ${gen_py})
 
             add_custom_command(
                 OUTPUT "${gen_cpp}"
